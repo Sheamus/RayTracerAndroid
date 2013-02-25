@@ -32,7 +32,7 @@ public class Board {
         int sizeX = 10;
         int sizeY = 10;
         int cellsX = 320 / sizeX;
-        int cellsY = (480 - 50 - 80) / sizeY;
+        int cellsY = (480 - 64 - 60) / sizeY;
         Random random = new Random();
 
         for(int j=0;j<cellsY;j++)
@@ -43,7 +43,7 @@ public class Board {
                 if((i+j)%2 == 0)
                     p.setColor(0xffffffff);
                 
-        		canvas.drawRect(i*sizeX,  j*sizeY + 50, (i+1)*sizeX-1, (j+1)*sizeY-1 + 50, p);
+        		canvas.drawRect(i*sizeX,  j*sizeY + 64, (i+1)*sizeX-1, (j+1)*sizeY-1 + 64, p);
         	}
         }
 

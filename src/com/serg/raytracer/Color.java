@@ -21,6 +21,6 @@ public class Color {
 	
 	public static int ToInt(Color c)
 	{
-		return (c.R & 0xff) + ((c.G >> 8) & 0xff) + ((c.G >> 16) & 0xff); 
+		return (c.B & 0xff) + ((c.G >> 8) & 0xff) + ((c.R >> 16) & 0xff); 
 	}
 }

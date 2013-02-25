@@ -1,3 +1,5 @@
+//TODO: Сделать ProgressBar
+
 package com.serg.raytracer;
 
 import java.util.Random;
@@ -18,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 
+
 public class MainActivity extends Activity implements OnClickListener {
 
 	private Bitmap bitmap;
@@ -26,6 +29,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Thread genThread;
 	private ImageView image;
 	private int steps = 0;
+	int y = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +48,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
@@ -72,8 +75,9 @@ public class MainActivity extends Activity implements OnClickListener {
         p.setStyle(Paint.Style.FILL);  
         p.setStrokeWidth(1);  
         
-        for (int j = 50; j < 400; j++)
+        for (int j = 64; j < 420; j++)
         {
+        	y = j;
             for (int i = 0; i < 320; i++)
             {
                 Color c = s.Render(i - 320 / 2, j - 480 / 2);
@@ -124,9 +128,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		while(isRendering)
 		{
-		    Log.v("RayTracer", "image.setImageBitmap(bitmap);");
+		    //Log.v("RayTracer", "image.setImageBitmap(bitmap);");
 	        image.setImageBitmap(bitmap);
 	        try {
+	        	Log.i("Y", "y=" + y);
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();

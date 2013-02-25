@@ -6,8 +6,8 @@ import java.util.List;
 public class Scene {
 	public double[][] F = new double[4][4];
 	public double[][] F_1 = new double[4][4];
-	public double FOCUS = 10000.0;
-	public double alpha = 0.0;
+	public double FOCUS = 10000.0f;
+	public double alpha = 0.0f;
 	public int MaxReflection = 3;
 	public int Reflections;
 	public int MaxRefraction = 0;
@@ -35,8 +35,8 @@ public class Scene {
 	
 	public void SetCamera(Vector pos, double p, double q)
 	{
-		double lat = q * Math.PI/180.0;
-		double lon = p * Math.PI/180.0;
+		double lat = q * Math.PI/180.0f;
+		double lon = p * Math.PI/180.0f;
 		double cos_a = Math.cos(lat);
 		double sin_a = Math.sin(lat);
 		double cos_b = Math.cos(lon);
@@ -47,36 +47,36 @@ public class Scene {
 		F[0][0] = - cos_a;
 		F[1][0] = - sin_a * sin_b;
 		F[2][0] = - sin_a * cos_b;
-		F[3][0] = 0.0;
+		F[3][0] = 0.0f;
 		F[0][1] = sin_a;
 		F[1][1] = - cos_a * sin_b;
 		F[2][1] = - cos_a * cos_b;
-		F[3][1] = 0.0;
-		F[0][2] = 0.0;
+		F[3][1] = 0.0f;
+		F[0][2] = 0.0f;
 		F[1][2] = cos_b * sin_b;
 		F[2][2] = sin_b;
-		F[3][2] = 0.0;
+		F[3][2] = 0.0f;
 		F[0][3] = Sa;
 		F[1][3] = Sb;
 		F[2][3] = Sc;
-		F[3][3] = 1.0;
+		F[3][3] = 1.0f;
 		
 		F_1[0][0] = - cos_a;
 		F_1[1][0] = sin_a;
-		F_1[2][0] = 0.0;
-		F_1[3][0] = 0.0;
+		F_1[2][0] = 0.0f;
+		F_1[3][0] = 0.0f;
 		F_1[0][1] = - sin_a * sin_b;
 		F_1[1][1] = - sin_b * cos_a;
 		F_1[2][1] = cos_b;
-		F_1[3][1] = 0.0;
+		F_1[3][1] = 0.0f;
 		F_1[0][2] = - sin_a * cos_b;
 		F_1[1][2] = - cos_b * cos_a;
 		F_1[2][2] = - sin_b;
-		F_1[3][2] = 0.0;
+		F_1[3][2] = 0.0f;
 		F_1[0][3] = pos.m_x;
 		F_1[1][3] = pos.m_y;
 		F_1[2][3] = pos.m_z;
-		F_1[3][3] = 1.0;
+		F_1[3][3] = 1.0f;
 	}
 
 	public Vector EkrToObj(Vector p)
@@ -91,8 +91,8 @@ public class Scene {
 	public Ray ShootRay(int x, int y)
 	{
 		Ray ray = new Ray();
-		Vector p2 = new Vector(x + F_1[0][3], y + F_1[1][3], 0 + F_1[2][3]);
-		Vector p1 = new Vector(0 + F_1[0][3], 0 + F_1[1][3], -FOCUS + F_1[2][3]);
+		Vector p2 = new Vector(x + F_1[0][3], y + F_1[1][3], 0f + F_1[2][3]);
+		Vector p1 = new Vector(0f + F_1[0][3], 0f + F_1[1][3], -FOCUS + F_1[2][3]);
 		
 		Vector pob1 = new Vector(
 			p1.m_x * Math.cos(alpha)-p1.m_y * Math.sin(alpha),
@@ -116,6 +116,7 @@ public class Scene {
 		{
 			obj_base ob = objects.get(i);
 			ob.index = i;
+			objects.set(i, ob);
 			
 			RayIntersection = objects.get(i).Intersection(ray);
 		}
@@ -146,18 +147,18 @@ public class Scene {
 		if (rp!=null)
 		{
 			//вычисляем направление на источник света и определяем освещённость точки
-			Vector lght = new Vector(-0.0, -700.9, 1000.2);
-			double ang_cos = Vector.op_mult((Vector.op_minus(lght,rp.p)).normalize(), rp.normal);
+			Vector lght = new Vector(-0.0f, -700.9f, 1000.2f);
+			double ang_cos = Vector.op_mult((Vector.op_minus(lght, rp.p)).normalize(), rp.normal);
 			Color obj_color = objects.get(rp.obj_index).GetColor(rp.p);
 			Color col = new Color();
 			col = Color.FromArgb(
 					(byte)(ang_cos * obj_color.R),
 					(byte)(ang_cos * obj_color.G),
 					(byte)(ang_cos * obj_color.B));
-			if (ang_cos>0) 
+			//if (ang_cos>0) 
 				color = col;
-			else
-				color = Color.Black();
+			//else
+			//	color = Color.Black();
 							
 			//определяем затенённость точки
 			if(true)
@@ -177,11 +178,12 @@ public class Scene {
 						t_min = pts.get(i).t;
 						pp = pts.get(i);
 					}
+					
 					if (pp!=null)
 						if (pp.t>1)
-							color = Color.FromArgb((byte)(0.5 * color.R),
-			                           (byte)(0.5 * color.G), 
-			                           (byte)(0.5 * color.B));
+							color = Color.FromArgb((byte)(0.5f * color.R),
+			                           (byte)(0.5f * color.G), 
+			                           (byte)(0.5f * color.B));
 				}
 			}
 			
@@ -212,10 +214,10 @@ public class Scene {
 				Vector fall = Vector.op_minus(rp.p, ray.p1).normalize();
 				Vector norm = rp.normal.normalize();
 				double cs1 = - Vector.op_mult(fall, norm);
-				double n1 = 1.0002926;//воздух
+				double n1 = 1.0002926f;//воздух
 				double n2 = objects.get(rp.obj_index).n2;
 				double n = n1/n2;
-				double sq = 1.0-n*n*(1.0-cs1*cs1);
+				double sq = 1.0f-n*n*(1.0f-cs1*cs1);
 				//if (sq>=0)
 				{
 					double cs2 = Math.sqrt(sq);
@@ -223,7 +225,7 @@ public class Scene {
 					
 					//Random rnd = new Random();
 					Ray ray2 = new Ray();
-					ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(refr, 0.000001)));//смещаем первую точку чуть-чуть подальше от края объекта
+					ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(refr, 0.000001f)));//смещаем первую точку чуть-чуть подальше от края объекта
 					ray2.p2 = Vector.op_plus(rp.p, refr);
 
 					Color c3 = Color.Black();

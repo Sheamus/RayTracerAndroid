@@ -2,36 +2,31 @@ package com.serg.raytracer;
 
 public class Vector
 {
+	public double m_x, m_y, m_z;
 	
 	public Vector()
 	{
-		// clear vector
 		m_x=m_y=m_z=0.0f;
 	}
 
 	public Vector(double x,double y,double z)
 	{
-		// set members
-		m_x=x;
-		m_y=y;
+		m_x = x;
+		m_y = y;
 		m_z=z;
 	}
 
 	public Vector(Vector vec)
 	{
-		// copy members
 		m_x=vec.m_x;
 		m_y=vec.m_y;
 		m_z=vec.m_z;
 	}
 
-	/// Arithmetic
-	
 	static public Vector op_plus (Vector v1, Vector v2)
 	{
 		Vector result = new Vector();
 
-		// perform arithmetic
 		result.m_x = v1.m_x + v2.m_x;
 		result.m_y = v1.m_y + v2.m_y;
 		result.m_z = v1.m_z + v2.m_z;
@@ -55,7 +50,6 @@ public class Vector
 	{
 		Vector result = new Vector();
 
-		// perform arithmetic
 		result.m_x=v1.m_x-v2.m_x;
 		result.m_y=v1.m_y-v2.m_y;
 		result.m_z=v1.m_z-v2.m_z;
@@ -102,7 +96,6 @@ public class Vector
 		return result;
 	}
 
-	/// Return magnitude of vector
 	public double magnitude()
 	{
 		return Math.sqrt( (m_x*m_x) + (m_y*m_y) + (m_z*m_z));
@@ -112,19 +105,16 @@ public class Vector
 	{
 		return (m_x*m_x) + (m_y*m_y) + (m_z*m_z);
 	}
-	/// Normalize vector
+
 	public Vector normalize()
 	{
 		Vector result = new Vector();
 
-		// get magnitude
 		double mag=this.magnitude();
 
-		// prevent divide by zero
-		if(mag==0.0f)
+		if(mag == 0.0f)
 			return result;
 
-		// divide vector by magnitude
 		result.m_x=m_x/mag;
 		result.m_y=m_y/mag;
 		result.m_z=m_z/mag;
@@ -132,7 +122,6 @@ public class Vector
 		return result;
 	}
 
-	/// Get vector's dot product
 	public double dotproduct(Vector vec)
 	{
 		double mag=this.magnitude()*vec.magnitude();
@@ -143,7 +132,6 @@ public class Vector
 			return 0.0f;
 	}
 
-	// get vector's cross product
 	public Vector crossproduct(Vector vec)
 	{
 		Vector result=new Vector();
@@ -155,6 +143,4 @@ public class Vector
 		return result;
 	}
 
-	/// Vector information
-	public double m_x,m_y,m_z;
 }
