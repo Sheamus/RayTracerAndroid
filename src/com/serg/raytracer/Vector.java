@@ -73,7 +73,6 @@ public class Vector
 	{
 		Vector result=new Vector();
 
-		// perform arithmetic
 		result.m_x=vec.m_x*f;
 		result.m_y=vec.m_y*f;
 		result.m_z=vec.m_z*f;
@@ -85,7 +84,6 @@ public class Vector
 	{
 		Vector result = new Vector();
 
-		// perform arithmetic
 		if(v2.m_x!=0.0f)
 			result.m_x=v1.m_x/v2.m_x;
 		else
