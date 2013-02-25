@@ -3,6 +3,7 @@ package com.serg.raytracer;
 import java.util.Random;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,6 +20,13 @@ import android.widget.ImageView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
+	private Bitmap bitmap;
+	private Handler mHandler = new Handler();
+	private boolean isRendering; 
+	private Thread genThread;
+	private ImageView image;
+	private int steps = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,7 +36,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	    btnOK.setOnClickListener(this);
 
 	    Board board = new Board();
-
+	    isRendering = false;
+	    
 	    ImageView image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(board.Init());
 	}
@@ -40,12 +49,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		return true;
 	}
 
-	@Override
-	public void onClick(View arg0) {
+	public void Render()
+	{
 		long start = System.currentTimeMillis();
 
-		ImageView image = (ImageView) findViewById(R.id.imageView1);
-        
         Scene s = new Scene();
         s.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 45f);
         s.MaxReflection = 2;
@@ -57,9 +64,9 @@ public class MainActivity extends Activity implements OnClickListener {
         Sphere sph2 = new Sphere(-30, 50, -80, 30, Color.FromArgb((byte)22, (byte)150, (byte)250), 1.5);
         s.objects.add(sph2);
         
-		Bitmap bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
-        
+		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
         Canvas canvas = new Canvas(bitmap);  
+
         Paint p = new Paint();   
         p.setAntiAlias(true);  
         p.setStyle(Paint.Style.FILL);  
@@ -73,12 +80,10 @@ public class MainActivity extends Activity implements OnClickListener {
                 int icol = (0xff << 24) + (c.R << 16) + (c.G << 8) + c.B; 
                 p.setColor(icol);
         		canvas.drawPoint(i, j, p);
-        		//i+=1;
+        		i+=steps;
             }
-            //j+=1;
+            j+=steps;
         }
-
-        image.setImageBitmap(bitmap);
 
 		long time = System.currentTimeMillis() - start;
         Log.i("Render time", time + " ms");
@@ -87,8 +92,70 @@ public class MainActivity extends Activity implements OnClickListener {
         canvas.drawText("Render time: " + time + " ms", 5, 380, p);
         p.setColor(0xffffffff);
         canvas.drawText("Render time: " + time + " ms", 4, 379, p);
-        
-        image.setImageBitmap(bitmap);
-}
+	}
+	
+	@Override
+	public void onClick(View arg0) {
+		image = (ImageView) findViewById(R.id.imageView1);
+		/*
+		int i = 0;
+	    Runnable r = Runnable(){
+	        public void run(){
+	            image.setImageBitmap(bitmap);
+	            image.postDelayed(r, 100); //set to go off again in 3 seconds.
+	         }
+	    };
+	    image.postDelated(r,100); // set first time for 3 seconds
+		*/
+		
+		if(!isRendering)
+		{
+			isRendering = true;
+			Thread.currentThread().setName("Main Thread");
+		    Log.v("RayTracer", "Rendering has run");
+		    genThread = new Thread(new RenderScene());
+		    genThread.start();
+		}
+		else
+		{
+		    Log.v("RayTracer", "Rendering has stopped");
+			isRendering = false;
+		}
+		
+		while(isRendering)
+		{
+		    Log.v("RayTracer", "image.setImageBitmap(bitmap);");
+	        image.setImageBitmap(bitmap);
+	        try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
+	
+	public class RenderScene implements Runnable{
+		String TAG = "RayTracer";
+
+		    public RenderScene()
+		    {
+		    //  mainThreadHandler = h;
+		    }
+		    @Override
+		    public void run() {
+		    	
+					Render();
+	/*
+			    	for(int i=0; isRendering && i < 10; i++){
+			            Log.v(TAG, new Integer(i).toString());
+			            try {
+			                Thread.sleep(1000);
+			            } catch (InterruptedException e) {
+			                e.printStackTrace();
+			            }
+			        }*/
+		        isRendering = false;
+		    }
+		}
 }
