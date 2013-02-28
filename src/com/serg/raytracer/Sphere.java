@@ -2,6 +2,8 @@ package com.serg.raytracer;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class Sphere extends obj_base
 {
 
@@ -14,7 +16,7 @@ public class Sphere extends obj_base
         center = new Vector(x, y, z);
         r = _r;
         color = col;
-        n2 = n;
+	    n2 = n;
     }
 
     public ArrayList<RayPoint> Intersection(Ray ray)

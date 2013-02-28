@@ -62,10 +62,14 @@ public class MainActivity extends Activity implements OnClickListener {
         s.MaxRefraction = 2;
         s.FOCUS = 1000;
 
-        Sphere sph = new Sphere(0, 0, 0, 40, Color.FromArgb((byte)255, (byte)222, (byte)200), 1.5);
+        Color col = new Color().FromArgb(255, 127, 0);
+        
+        Sphere sph = new Sphere(0, 0, 0, 40, col, 1.5);
         s.objects.add(sph);
-        Sphere sph2 = new Sphere(-30, 50, -80, 30, Color.FromArgb((byte)22, (byte)150, (byte)250), 1.5);
+        Sphere sph2 = new Sphere(-30, 50, -80, 30, Color.FromArgb(22, 150, 250), 1.5);
         s.objects.add(sph2);
+        
+        Log.i("s.objects", "" + s.objects.size());
         
 		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
         Canvas canvas = new Canvas(bitmap);  
@@ -81,9 +85,14 @@ public class MainActivity extends Activity implements OnClickListener {
             for (int i = 0; i < 320; i++)
             {
                 Color c = s.Render(i - 320 / 2, j - 480 / 2);
-                int icol = (0xff << 24) + (c.R << 16) + (c.G << 8) + c.B; 
+                int icol = 0xff000000 + (c.R << 16) + (c.G << 8) + c.B; 
                 p.setColor(icol);
-        		canvas.drawPoint(i, j, p);
+
+                if(steps == 0)
+                	canvas.drawPoint(i, j, p);
+                else
+                	canvas.drawRect(i, j, i+steps+1, j+steps+1, p);
+        		
         		i+=steps;
             }
             j+=steps;

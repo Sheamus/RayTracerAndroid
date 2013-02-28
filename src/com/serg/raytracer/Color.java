@@ -1,16 +1,31 @@
 package com.serg.raytracer;
 
 public class Color {
-	public byte R;
-	public byte G;
-	public byte B;
+	public int R;
+	public int G;
+	public int B;
 	
 	public static Color Black()
 	{
-		return FromArgb((byte)0, (byte)0, (byte)0);
+		return FromArgb(0, 0, 0);
 	}
 	
-	public static Color FromArgb(byte r, byte g, byte b)
+	public static Color Red()
+	{
+		return FromArgb(255, 0, 0);
+	}
+	
+	public static Color White()
+	{
+		return FromArgb(255, 255, 255);
+	}
+	
+	public static Color Gray()
+	{
+		return FromArgb(127, 127, 127);
+	}
+	
+	public static Color FromArgb(int r, int g, int b)
 	{
 		Color c = new Color();
 		c.R = r;
@@ -21,6 +36,6 @@ public class Color {
 	
 	public static int ToInt(Color c)
 	{
-		return (c.B & 0xff) + ((c.G >> 8) & 0xff) + ((c.R >> 16) & 0xff); 
+		return 0xff000000 + (c.B & 0xff) + ((c.G >> 8) & 0xff) + ((c.R >> 16) & 0xff); 
 	}
 }

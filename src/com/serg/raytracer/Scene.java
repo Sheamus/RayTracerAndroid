@@ -3,6 +3,8 @@ package com.serg.raytracer;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 public class Scene {
 	public double[][] F = new double[4][4];
 	public double[][] F_1 = new double[4][4];
@@ -118,7 +120,10 @@ public class Scene {
 			ob.index = i;
 			objects.set(i, ob);
 			
-			RayIntersection = objects.get(i).Intersection(ray);
+			//RayIntersection = objects.get(i).Intersection(ray);
+			ArrayList<RayPoint> rps = objects.get(i).Intersection(ray);
+			for(int j=0;j<rps.size();j++)
+				RayIntersection.add(rps.get(j)); 
 		}
 		return RayIntersection;
 	}
@@ -137,12 +142,14 @@ public class Scene {
 				t_min = intersections.get(i).t;
 				pp = intersections.get(i);
 			}
+
 		return pp;
 	}
 	
 	public Color FullTrace(Ray ray)
 	{  
-		Color color = new Color();
+		Color color = (new Color());
+		//color = (new Color()).Gray();
 		RayPoint rp = Trace(ray);
 		if (rp!=null)
 		{
@@ -151,15 +158,14 @@ public class Scene {
 			double ang_cos = Vector.op_mult((Vector.op_minus(lght, rp.p)).normalize(), rp.normal);
 			Color obj_color = objects.get(rp.obj_index).GetColor(rp.p);
 			Color col = new Color();
-			col = Color.FromArgb(
-					(byte)(ang_cos * obj_color.R),
-					(byte)(ang_cos * obj_color.G),
-					(byte)(ang_cos * obj_color.B));
-			//if (ang_cos>0) 
+			col.R = (int)(ang_cos * obj_color.R);
+			col.G = (int)(ang_cos * obj_color.G);
+			col.B = (int)(ang_cos * obj_color.B);
+			if (ang_cos>0) 
 				color = col;
-			//else
-			//	color = Color.Black();
-							
+			else
+				color = Color.Black();
+
 			//определяем затенённость точки
 			if(true)
 			{
@@ -181,9 +187,9 @@ public class Scene {
 					
 					if (pp!=null)
 						if (pp.t>1)
-							color = Color.FromArgb((byte)(0.5f * color.R),
-			                           (byte)(0.5f * color.G), 
-			                           (byte)(0.5f * color.B));
+							color = Color.FromArgb((int)(0.5f * color.R),
+			                           (int)(0.5f * color.G), 
+			                           (int)(0.5f * color.B));
 				}
 			}
 			
@@ -202,9 +208,9 @@ public class Scene {
 				Color c2 = Color.Black();
 				c2 = FullTrace(ray2);
 				
-				color = Color.FromArgb((byte)((color.R + c2.R)>255?255:(color.R + c2.R)),
-				                       (byte)((color.G + c2.G)>255?255:(color.G + c2.G)),
-				                       (byte)((color.B + c2.B)>255?255:(color.B + c2.B)));
+				color = Color.FromArgb((int)((color.R + c2.R)>255?255:(color.R + c2.R)),
+				                       (int)((color.G + c2.G)>255?255:(color.G + c2.G)),
+				                       (int)((color.B + c2.B)>255?255:(color.B + c2.B)));
 			}
 			
 			//преломление
@@ -228,12 +234,14 @@ public class Scene {
 					ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(refr, 0.000001f)));//смещаем первую точку чуть-чуть подальше от края объекта
 					ray2.p2 = Vector.op_plus(rp.p, refr);
 
-					Color c3 = Color.Black();
+					Color c3 = Color.Red();
 					c3 = FullTrace(ray2);
 					
-					color = Color.FromArgb((byte)((color.R + c3.R)>255?255:(color.R + c3.R)), 
-							(byte)((color.G + c3.G)>255?255:(color.G + c3.G)),
-							(byte)((color.B + c3.B)>255?255:(color.B + c3.B)));
+					//Log.i("c3", c3.R + ", " + c3.G + ", " + c3.B);
+					
+					color = Color.FromArgb(((color.R + c3.R)>255?255:(color.R + c3.R)), 
+							((color.G + c3.G)>255?255:(color.G + c3.G)),
+							((color.B + c3.B)>255?255:(color.B + c3.B)));
 				}
 
 			}
@@ -243,12 +251,10 @@ public class Scene {
 	
 	public Color Render(int x, int y)
 	{
-		Color c = Color.Black();
-		
 		Ray ray = ShootRay(x, y);
 		Reflections = 0;
 		Refractions = 0;
-		c = FullTrace(ray);
+		Color c = FullTrace(ray);
 		return c;
 	}
 }
