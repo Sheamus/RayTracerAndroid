@@ -62,12 +62,17 @@ public class MainActivity extends Activity implements OnClickListener {
         s.MaxRefraction = 2;
         s.FOCUS = 1000;
 
-        Color col = new Color().FromArgb(255, 127, 0);
-        
-        Sphere sph = new Sphere(0, 0, 0, 40, col, 1.5);
-        s.objects.add(sph);
-        Sphere sph2 = new Sphere(-30, 50, -80, 30, Color.FromArgb(22, 150, 250), 1.5);
-        s.objects.add(sph2);
+        Random r = new Random();
+        for(int i=0;i<20;i++)
+        {
+	        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+	        Sphere sph = new Sphere(
+	        		r.nextInt(200)-100, 
+	        		r.nextInt(200)-100, 
+	        		r.nextInt(200)-100, 
+	        		r.nextInt(100)+10, col, 1.5);
+	        s.objects.add(sph);
+        }
         
         Log.i("s.objects", "" + s.objects.size());
         

@@ -234,7 +234,7 @@ public class Scene {
 					ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(refr, 0.000001f)));//смещаем первую точку чуть-чуть подальше от края объекта
 					ray2.p2 = Vector.op_plus(rp.p, refr);
 
-					Color c3 = Color.Red();
+					Color c3 = new Color();
 					c3 = FullTrace(ray2);
 					
 					//Log.i("c3", c3.R + ", " + c3.G + ", " + c3.B);
