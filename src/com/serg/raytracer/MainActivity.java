@@ -63,14 +63,14 @@ public class MainActivity extends Activity implements OnClickListener {
         s.FOCUS = 1000;
 
         Random r = new Random();
-        for(int i=0;i<20;i++)
+        for(int i=0;i<30;i++)
         {
 	        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	        Sphere sph = new Sphere(
-	        		r.nextInt(200)-100, 
-	        		r.nextInt(200)-100, 
-	        		r.nextInt(200)-100, 
-	        		r.nextInt(100)+10, col, 1.5);
+	        		r.nextInt(400)-200, 
+	        		r.nextInt(400)-200, 
+	        		r.nextInt(400)-200, 
+	        		r.nextInt(50)+10, col, 1.5);
 	        s.objects.add(sph);
         }
         
@@ -80,8 +80,8 @@ public class MainActivity extends Activity implements OnClickListener {
         Canvas canvas = new Canvas(bitmap);  
 
         Paint p = new Paint();   
-        p.setAntiAlias(true);  
-        p.setStyle(Paint.Style.FILL);  
+        p.setAntiAlias(false);  
+        p.setStyle(Paint.Style.FILL_AND_STROKE);  
         p.setStrokeWidth(1);  
         
         for (int j = 64; j < 420; j++)
