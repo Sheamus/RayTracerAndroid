@@ -1,4 +1,10 @@
 //TODO: —делать ProgressBar
+//многопоточность
+//AsyncTask
+//эффекты, объекты
+//если после проломлени€, отражени€ и т.п. €ркость луча меньше определЄнного порога, то дальше ход луча не продолжать
+//Cornell Box
+//формат .3ds
 
 package com.serg.raytracer;
 
@@ -28,8 +34,10 @@ public class MainActivity extends Activity implements OnClickListener {
 	private boolean isRendering; 
 	private Thread genThread;
 	private ImageView image;
-	private int steps = 0;
+	private int steps = 5;
 	int y = 0;
+	double estimated = 0;
+	double donePercents = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +71,22 @@ public class MainActivity extends Activity implements OnClickListener {
         s.FOCUS = 1000;
 
         Random r = new Random();
-        for(int i=0;i<30;i++)
+        for(int i=0;i<5;i++)
         {
+        	int x = r.nextInt(300)-150;
+        	int y = r.nextInt(400)-200;
+        	int z = r.nextInt(200)-100;
+        	Log.i("sphere x,y,z", x+","+y+","+z);
+        	
 	        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	        Sphere sph = new Sphere(
-	        		r.nextInt(400)-200, 
-	        		r.nextInt(400)-200, 
-	        		r.nextInt(400)-200, 
+	        		x, y, z, 
 	        		r.nextInt(50)+10, col, 1.5);
 	        s.objects.add(sph);
         }
+        
+        s.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 1.1));//задн€€ стенка
+        s.objects.add(new Plane(new Vector(0, 100, 0), new Vector(0, 0, 1), Color.Red(), 1.1));//пол
         
         Log.i("s.objects", "" + s.objects.size());
         
@@ -84,9 +98,16 @@ public class MainActivity extends Activity implements OnClickListener {
         p.setStyle(Paint.Style.FILL_AND_STROKE);  
         p.setStrokeWidth(1);  
         
-        for (int j = 64; j < 420; j++)
+		long time = System.currentTimeMillis() - start;
+
+		for (int j = 64; j < 420; j++)
         {
         	y = j;
+    		time = System.currentTimeMillis() - start;
+    		donePercents = 100*(j-64)/(420-64);
+    		if(donePercents>0)
+    			estimated = 100*time/donePercents;
+    		
             for (int i = 0; i < 320; i++)
             {
                 Color c = s.Render(i - 320 / 2, j - 480 / 2);
@@ -103,7 +124,7 @@ public class MainActivity extends Activity implements OnClickListener {
             j+=steps;
         }
 
-		long time = System.currentTimeMillis() - start;
+		time = System.currentTimeMillis() - start;
         Log.i("Render time", time + " ms");
 
         p.setColor(0xff000000);
@@ -145,7 +166,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		    //Log.v("RayTracer", "image.setImageBitmap(bitmap);");
 	        image.setImageBitmap(bitmap);
 	        try {
-	        	Log.i("Y", "y=" + y);
+	        	Log.i("Y", "y=" + y + ", done:" + (int)donePercents + "%, estimated:" + (int)estimated + "ms");
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();

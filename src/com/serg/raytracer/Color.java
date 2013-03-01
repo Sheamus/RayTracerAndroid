@@ -5,6 +5,7 @@ public class Color {
 	public int G;
 	public int B;
 	
+	//Color - это вектор!
 	public static Color Black()
 	{
 		return FromArgb(0, 0, 0);
@@ -13,6 +14,31 @@ public class Color {
 	public static Color Red()
 	{
 		return FromArgb(255, 0, 0);
+	}
+	
+	public static Color Green()
+	{
+		return FromArgb(0, 255, 0);
+	}
+	
+	public static Color Blue()
+	{
+		return FromArgb(0, 0, 255);
+	}
+	
+	public static Color Yellow()
+	{
+		return FromArgb(255, 255, 0);
+	}
+	
+	public static Color Cyan()
+	{
+		return FromArgb(0, 255, 255);
+	}
+	
+	public static Color Magents()
+	{
+		return FromArgb(255, 0, 255);
 	}
 	
 	public static Color White()

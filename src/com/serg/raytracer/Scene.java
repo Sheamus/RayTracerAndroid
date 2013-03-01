@@ -202,11 +202,16 @@ public class Scene {
 				Vector reflect = Vector.op_minus(fall, Vector.op_mult(Vector.op_mult(norm, cs), 2));
 				
 				Ray ray2 = new Ray();
-				ray2.p1 = rp.p;
+				ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(reflect, 0.000001f)));//смещаем первую точку чуть-чуть подальше от края объекта
 				ray2.p2 = Vector.op_plus(rp.p, reflect);
 				
 				Color c2 = Color.Black();
 				c2 = FullTrace(ray2);
+
+				//учитываем коэффициент отражения. Чем он больше, тем зеркальнее поверхность текущего объекта
+				c2.R = (int)(c2.R * 0.7);
+				c2.G = (int)(c2.G * 0.7);
+				c2.B = (int)(c2.B * 0.7);
 				
 				color = Color.FromArgb((int)((color.R + c2.R)>255?255:(color.R + c2.R)),
 				                       (int)((color.G + c2.G)>255?255:(color.G + c2.G)),
@@ -236,6 +241,11 @@ public class Scene {
 
 					Color c3 = new Color();
 					c3 = FullTrace(ray2);
+					
+					//учитываем коэффициент поглощения. Чем он больше, тем прозрачнее объект
+					c3.R = (int)(c3.R * 0.5);
+					c3.G = (int)(c3.G * 0.5);
+					c3.B = (int)(c3.B * 0.5);
 					
 					//Log.i("c3", c3.R + ", " + c3.G + ", " + c3.B);
 					
