@@ -36,7 +36,7 @@ public class Color {
 		return FromArgb(0, 255, 255);
 	}
 	
-	public static Color Magents()
+	public static Color Magenta()
 	{
 		return FromArgb(255, 0, 255);
 	}

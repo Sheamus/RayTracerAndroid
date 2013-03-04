@@ -15,7 +15,8 @@ public class Scene {
 	public int Reflections;
 	public int MaxRefraction = 0;
 	public int Refractions;
-			
+	public Vector light;	
+	
 	public int[][][] RuleTable = new int[][][] //array [-1..1, -1..1, 1..5] of integer =
 	    {{{ 1,  -1,  -1,  -1,  -1},
           { 1,  -1,   0,   0,  -1},
@@ -33,6 +34,7 @@ public class Scene {
 	public Scene()
 	{
 		objects = new ArrayList<obj_base>();
+		light = new Vector();
 	}
 
 	
@@ -155,8 +157,7 @@ public class Scene {
 		if (rp!=null)
 		{
 			//вычисляем направление на источник света и определяем освещённость точки
-			Vector lght = new Vector(0.0f, -99f, 0.0f);
-			double ang_cos = Vector.op_mult((Vector.op_minus(lght, rp.p)).normalize(), rp.normal);
+			double ang_cos = Vector.op_mult((Vector.op_minus(light, rp.p)).normalize(), rp.normal);
 			Color obj_color = objects.get(rp.obj_index).GetColor(rp.p);
 			Color col = new Color();
 			col.R = (int)(ang_cos * obj_color.R);
@@ -172,7 +173,7 @@ public class Scene {
 			{
 				Ray ray2ligth = new Ray();
 				ray2ligth.p1 = rp.p;
-				ray2ligth.p2 = lght;
+				ray2ligth.p2 = light;
 				ArrayList<RayPoint> pts = IntersectAllObjects(ray2ligth);
 				
 				if (pts.size()>0) 

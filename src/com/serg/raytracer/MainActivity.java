@@ -40,6 +40,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	int y = 0;
 	double estimated = 0;
 	double donePercents = 0;
+	long time = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +68,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		long start = System.currentTimeMillis();
 
         Scene scene = new Scene();
-        scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 45f);
+        scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
         scene.MaxReflection = 5;
         scene.MaxRefraction = 2;
-        scene.FOCUS = 1000;
+        scene.FOCUS = 500;
         scene.Shadows = false;
         
         Random r = new Random();
@@ -88,11 +89,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	        scene.objects.add(sph);
         }
         
-        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 0, 0, 1.1));//задняя стенка
-        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 0.1, 0, 1.1));//пол
-        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.Blue(), 0, 0, 1.1));//потолок
-        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 0, 0, 1.1));
-        //scene.objects.add(new Plane(new Vector(-100, 0, 0), new Vector(1, 0, 0), Color.Red(), 0, 0, 1.1));
+		scene.light = new Vector(0.0f, -199f, 0.0f);
+
+        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 0.0, 0, 1.1));//задняя стенка
+        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 0.0, 0, 1.1));//пол
+        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 0.0, 0, 1.1));//потолок
+        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 0.0, 0, 1.1));//левая стенка
+        scene.objects.add(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 0, 0, 1.1));//правая стенка
         
         Log.i("s.objects", "" + scene.objects.size());
         
@@ -104,7 +107,7 @@ public class MainActivity extends Activity implements OnClickListener {
         p.setStyle(Paint.Style.FILL_AND_STROKE);  
         p.setStrokeWidth(1);  
         
-		long time = System.currentTimeMillis() - start;
+		time = System.currentTimeMillis() - start;
 
 		for (int j = 64; j < 420; j++)
         {
@@ -172,7 +175,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		    //Log.v("RayTracer", "image.setImageBitmap(bitmap);");
 	        image.setImageBitmap(bitmap);
 	        try {
-	        	Log.i("Y", "y=" + y + ", done:" + (int)donePercents + "%, estimated:" + (int)estimated + "ms");
+	        	Log.i("Y", "y=" + y + ", done:" + (int)donePercents + "%, left:" + (int)((estimated - time)/1000) + "s");
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
