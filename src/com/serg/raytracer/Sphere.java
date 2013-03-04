@@ -11,11 +11,13 @@ public class Sphere extends obj_base
     public double r;
 
 
-    public Sphere(double x, double y, double z, double _r, Color col, double n)
+    public Sphere(double x, double y, double z, double _r, Color col, double reflect, double transparent, double n)
     {
         center = new Vector(x, y, z);
         r = _r;
-        color = col;
+        material.color = col;
+        material.reflictivity = reflect;
+        material.transparency = transparent;
 	    n2 = n;
     }
 
@@ -56,6 +58,6 @@ public class Sphere extends obj_base
 
     public Color GetColor(Vector p)
     {
-        return color;
+        return material.color;
     }
 }

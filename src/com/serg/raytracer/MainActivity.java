@@ -5,6 +5,8 @@
 //если после проломлени€, отражени€ и т.п. €ркость луча меньше определЄнного порога, то дальше ход луча не продолжать
 //Cornell Box
 //формат .3ds
+//настройки программы, рендеринга, сцены
+//caustics
 
 package com.serg.raytracer;
 
@@ -34,7 +36,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private boolean isRendering; 
 	private Thread genThread;
 	private ImageView image;
-	private int steps = 5;
+	private int steps = 0;
 	int y = 0;
 	double estimated = 0;
 	double donePercents = 0;
@@ -64,12 +66,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	{
 		long start = System.currentTimeMillis();
 
-        Scene s = new Scene();
-        s.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 45f);
-        s.MaxReflection = 2;
-        s.MaxRefraction = 2;
-        s.FOCUS = 1000;
-
+        Scene scene = new Scene();
+        scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 45f);
+        scene.MaxReflection = 5;
+        scene.MaxRefraction = 2;
+        scene.FOCUS = 1000;
+        scene.Shadows = false;
+        
         Random r = new Random();
         for(int i=0;i<5;i++)
         {
@@ -81,14 +84,17 @@ public class MainActivity extends Activity implements OnClickListener {
 	        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	        Sphere sph = new Sphere(
 	        		x, y, z, 
-	        		r.nextInt(50)+10, col, 1.5);
-	        s.objects.add(sph);
+	        		r.nextInt(90)+10, col, 0.7, 0.5, 1.5);
+	        scene.objects.add(sph);
         }
         
-        s.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 1.1));//задн€€ стенка
-        s.objects.add(new Plane(new Vector(0, 100, 0), new Vector(0, 0, 1), Color.Red(), 1.1));//пол
+        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 0, 0, 1.1));//задн€€ стенка
+        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 0.1, 0, 1.1));//пол
+        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.Blue(), 0, 0, 1.1));//потолок
+        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 0, 0, 1.1));
+        //scene.objects.add(new Plane(new Vector(-100, 0, 0), new Vector(1, 0, 0), Color.Red(), 0, 0, 1.1));
         
-        Log.i("s.objects", "" + s.objects.size());
+        Log.i("s.objects", "" + scene.objects.size());
         
 		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
         Canvas canvas = new Canvas(bitmap);  
@@ -110,7 +116,7 @@ public class MainActivity extends Activity implements OnClickListener {
     		
             for (int i = 0; i < 320; i++)
             {
-                Color c = s.Render(i - 320 / 2, j - 480 / 2);
+                Color c = scene.Render(i - 320 / 2, j - 480 / 2);
                 int icol = 0xff000000 + (c.R << 16) + (c.G << 8) + c.B; 
                 p.setColor(icol);
 

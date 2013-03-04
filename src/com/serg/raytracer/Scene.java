@@ -10,6 +10,7 @@ public class Scene {
 	public double[][] F_1 = new double[4][4];
 	public double FOCUS = 10000.0f;
 	public double alpha = 0.0f;
+	public boolean Shadows = true;
 	public int MaxReflection = 3;
 	public int Reflections;
 	public int MaxRefraction = 0;
@@ -154,7 +155,7 @@ public class Scene {
 		if (rp!=null)
 		{
 			//вычисляем направление на источник света и определяем освещённость точки
-			Vector lght = new Vector(-0.0f, -700.9f, 1000.2f);
+			Vector lght = new Vector(0.0f, -99f, 0.0f);
 			double ang_cos = Vector.op_mult((Vector.op_minus(lght, rp.p)).normalize(), rp.normal);
 			Color obj_color = objects.get(rp.obj_index).GetColor(rp.p);
 			Color col = new Color();
@@ -167,7 +168,7 @@ public class Scene {
 				color = Color.Black();
 
 			//определяем затенённость точки
-			if(true)
+			if(Shadows)
 			{
 				Ray ray2ligth = new Ray();
 				ray2ligth.p1 = rp.p;
@@ -194,7 +195,7 @@ public class Scene {
 			}
 			
 			//делаем переотражения
-			if (Reflections++<MaxReflection)
+			if (Reflections++<MaxReflection && objects.get(rp.obj_index).material.reflictivity>0)
 			{
 				Vector fall = Vector.op_minus(rp.p, ray.p1).normalize();
 				Vector norm = rp.normal.normalize();
@@ -209,9 +210,9 @@ public class Scene {
 				c2 = FullTrace(ray2);
 
 				//учитываем коэффициент отражения. Чем он больше, тем зеркальнее поверхность текущего объекта
-				c2.R = (int)(c2.R * 0.7);
-				c2.G = (int)(c2.G * 0.7);
-				c2.B = (int)(c2.B * 0.7);
+				c2.R = (int)(c2.R * objects.get(rp.obj_index).material.reflictivity);
+				c2.G = (int)(c2.G * objects.get(rp.obj_index).material.reflictivity);
+				c2.B = (int)(c2.B * objects.get(rp.obj_index).material.reflictivity);
 				
 				color = Color.FromArgb((int)((color.R + c2.R)>255?255:(color.R + c2.R)),
 				                       (int)((color.G + c2.G)>255?255:(color.G + c2.G)),
@@ -219,7 +220,7 @@ public class Scene {
 			}
 			
 			//преломление
-			if (Refractions++<MaxRefraction)
+			if (Refractions++<MaxRefraction && objects.get(rp.obj_index).material.transparency>0)
 			{
 				//запускаем луч в среду
 				Vector fall = Vector.op_minus(rp.p, ray.p1).normalize();
@@ -243,9 +244,9 @@ public class Scene {
 					c3 = FullTrace(ray2);
 					
 					//учитываем коэффициент поглощения. Чем он больше, тем прозрачнее объект
-					c3.R = (int)(c3.R * 0.5);
-					c3.G = (int)(c3.G * 0.5);
-					c3.B = (int)(c3.B * 0.5);
+					c3.R = (int)(c3.R * objects.get(rp.obj_index).material.transparency);
+					c3.G = (int)(c3.G * objects.get(rp.obj_index).material.transparency);
+					c3.B = (int)(c3.B * objects.get(rp.obj_index).material.transparency);
 					
 					//Log.i("c3", c3.R + ", " + c3.G + ", " + c3.B);
 					

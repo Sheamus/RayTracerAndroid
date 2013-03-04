@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 public class obj_base {
 	public int index;
-	public Color color;
 	public double n2;
+	public Material material;
 	
 	public obj_base()
 	{
+		material = new Material(0.1, 0.1);
 	}
 	
 	public ArrayList<RayPoint> Intersection(Ray ray)
@@ -19,6 +20,6 @@ public class obj_base {
 	
 	public Color GetColor(Vector p)
 	{
-		return color;
+		return material.color;
 	}
 }
