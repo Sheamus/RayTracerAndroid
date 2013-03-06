@@ -18,16 +18,13 @@ import android.os.Handler;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Bitmap.Config;
-import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -37,7 +34,6 @@ public class MainActivity extends Activity {
 	static Bitmap bitmap;
 	private Handler mHandler = new Handler();
 	private boolean isRendering; 
-	private Thread genThread;
 
 	static int steps = 0;
 	static int y = 0;
