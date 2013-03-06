@@ -12,9 +12,12 @@ package com.serg.raytracer;
 
 import java.util.Random;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -29,31 +32,34 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity {
 
-	private Bitmap bitmap;
+	static Bitmap bitmap;
 	private Handler mHandler = new Handler();
 	private boolean isRendering; 
 	private Thread genThread;
-	private ImageView image;
-	private int steps = 0;
-	int y = 0;
-	double estimated = 0;
-	double donePercents = 0;
-	long time = 0;
-	
+
+	static int steps = 0;
+	static int y = 0;
+	static double estimated = 0;
+	static double donePercents = 0;
+	static long time = 0;
+
+	ImageView image;
+    Button runButt;
+    final int PROGRESS_DLG_ID = 777;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-	    Button btnOK = (Button) findViewById(R.id.button1);
-	    btnOK.setOnClickListener(this);
+	    runButt = (Button) findViewById(R.id.button1);
 
 	    Board board = new Board();
 	    isRendering = false;
 	    
-	    ImageView image = (ImageView) findViewById(R.id.imageView1);
+	    image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(board.Init());
 	}
 
@@ -63,39 +69,50 @@ public class MainActivity extends Activity implements OnClickListener {
 		return true;
 	}
 
-	public void Render()
+	public static void Render()
 	{
+		Log.i("Render", ">>");
 		long start = System.currentTimeMillis();
 
         Scene scene = new Scene();
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
         scene.MaxReflection = 5;
-        scene.MaxRefraction = 2;
+        scene.MaxRefraction = 5;
         scene.FOCUS = 500;
         scene.Shadows = false;
         
         Random r = new Random();
-        for(int i=0;i<5;i++)
-        {
-        	int x = r.nextInt(300)-150;
-        	int y = r.nextInt(400)-200;
-        	int z = r.nextInt(200)-100;
-        	Log.i("sphere x,y,z", x+","+y+","+z);
-        	
-	        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-	        Sphere sph = new Sphere(
-	        		x, y, z, 
-	        		r.nextInt(90)+10, col, 0.7, 0.5, 1.5);
-	        scene.objects.add(sph);
-        }
         
-		scene.light = new Vector(0.0f, -199f, 0.0f);
+        boolean testCSG = false;
+        
+        if(!testCSG)
+        {
+	        for(int i=0;i<5;i++)
+	        {
+	        	int x = r.nextInt(300)-150;
+	        	int y = r.nextInt(400)-200;
+	        	int z = r.nextInt(200)-100;
+	        	Log.i("sphere x,y,z", x+","+y+","+z);
+	        	
+		        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+		        Sphere sph = new Sphere(
+		        		x, y, z, 
+		        		r.nextInt(90)+10, col, 0.1, 0.5, 1.5);
+		        scene.objects.add(sph);
+	        }
+        }
+        else{
+	        scene.objects.add(new Sphere( 50f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
+	        scene.objects.add(new Sphere(-50f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
+        }
 
-        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 0.0, 0, 1.1));//задняя стенка
-        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 0.0, 0, 1.1));//пол
-        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 0.0, 0, 1.1));//потолок
-        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 0.0, 0, 1.1));//левая стенка
-        scene.objects.add(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 0, 0, 1.1));//правая стенка
+        scene.light = new Vector(0.0f, -199f, 0.0f);
+
+        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 	0.0, 0.0, 1.1));//задняя стенка
+        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 		0.0, 0.0, 1.1));//пол
+        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 	0.0, 0.0, 1.1));//потолок
+        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 	0.0, 0.0, 1.1));//левая стенка
+        scene.objects.add(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 		0.0, 0.0, 1.1));//правая стенка
         
         Log.i("s.objects", "" + scene.objects.size());
         
@@ -143,68 +160,45 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 	
 	@Override
-	public void onClick(View arg0) {
-		image = (ImageView) findViewById(R.id.imageView1);
-		/*
-		int i = 0;
-	    Runnable r = Runnable(){
-	        public void run(){
-	            image.setImageBitmap(bitmap);
-	            image.postDelayed(r, 100); //set to go off again in 3 seconds.
-	         }
-	    };
-	    image.postDelated(r,100); // set first time for 3 seconds
-		*/
-		
-		if(!isRendering)
-		{
-			isRendering = true;
-			Thread.currentThread().setName("Main Thread");
-		    Log.v("RayTracer", "Rendering has run");
-		    genThread = new Thread(new RenderScene());
-		    genThread.start();
-		}
-		else
-		{
-		    Log.v("RayTracer", "Rendering has stopped");
-			isRendering = false;
-		}
-		
-		while(isRendering)
-		{
-		    //Log.v("RayTracer", "image.setImageBitmap(bitmap);");
-	        image.setImageBitmap(bitmap);
-	        try {
-	        	Log.i("Y", "y=" + y + ", done:" + (int)donePercents + "%, left:" + (int)((estimated - time)/1000) + "s");
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    protected Dialog onCreateDialog(int dialogId){
+        ProgressDialog progress = null;
+        switch (dialogId) {
+        case PROGRESS_DLG_ID:
+            progress = new ProgressDialog(this);
+                progress.setMessage("Rendering...");
+            break;
+        }
+        return progress;
+    }
+    
+    public void runButtonHandler(View button){
+        if(button.getId() == R.id.button1)
+        {
+            new RenderSceneTask().execute("");
+        }
+    }
+    
+    class RenderSceneTask extends AsyncTask<String, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            publishProgress(new Void[]{});
+           
+            Render();
 
-	
-	public class RenderScene implements Runnable{
-		String TAG = "RayTracer";
-
-		    public RenderScene()
-		    {
-		    //  mainThreadHandler = h;
-		    }
-		    @Override
-		    public void run() {
-		    	
-					Render();
-	/*
-			    	for(int i=0; isRendering && i < 10; i++){
-			            Log.v(TAG, new Integer(i).toString());
-			            try {
-			                Thread.sleep(1000);
-			            } catch (InterruptedException e) {
-			                e.printStackTrace();
-			            }
-			        }*/
-		        isRendering = false;
-		    }
-		}
+            return bitmap;
+        }
+        
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            showDialog(PROGRESS_DLG_ID);
+        }
+        
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
+            dismissDialog(PROGRESS_DLG_ID);
+            image.setImageBitmap(result);	
+        }
+    }
 }

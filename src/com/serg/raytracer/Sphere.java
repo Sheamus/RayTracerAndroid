@@ -10,7 +10,6 @@ public class Sphere extends obj_base
     public Vector center;
     public double r;
 
-
     public Sphere(double x, double y, double z, double _r, Color col, double reflect, double transparent, double n)
     {
         center = new Vector(x, y, z);

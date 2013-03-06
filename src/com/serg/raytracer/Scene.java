@@ -117,26 +117,29 @@ public class Scene {
 	public ArrayList<RayPoint> IntersectAllObjects(Ray ray)
 	{
 		ArrayList<RayPoint> RayIntersection = new ArrayList<RayPoint>();
+		
+		//переделать на обработку групп CSG-объектов, а не примитивов по отдельности!
 		for(int i=0; i<objects.size(); i++)
 		{
 			obj_base ob = objects.get(i);
 			ob.index = i;
 			objects.set(i, ob);
 			
-			//RayIntersection = objects.get(i).Intersection(ray);
 			ArrayList<RayPoint> rps = objects.get(i).Intersection(ray);
 			for(int j=0;j<rps.size();j++)
 				RayIntersection.add(rps.get(j)); 
 		}
+		
 		return RayIntersection;
 	}
 	
 	public RayPoint Trace(Ray ray)
 	{
 		RayPoint pp = null; 
+		
 		//находим пересечения со всеми объектами сцены
 		ArrayList<RayPoint> intersections = IntersectAllObjects(ray);
-		//ПРОБЛЕМА: не включать точки, находящиеся ЗА испускаемым лучом!
+
 		//ищем ближайшую точку
 		double t_min = Double.MAX_VALUE;
 		for(int i=0; i<intersections.size(); i++)
