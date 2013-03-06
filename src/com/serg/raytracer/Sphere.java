@@ -2,11 +2,11 @@ package com.serg.raytracer;
 
 import java.util.ArrayList;
 
+import android.R.integer;
 import android.util.Log;
 
-public class Sphere extends obj_base
+public class Sphere extends BaseObject
 {
-
     public Vector center;
     public double r;
 
@@ -58,5 +58,10 @@ public class Sphere extends obj_base
     public Color GetColor(Vector p)
     {
         return material.color;
+    }
+    
+    public int GetPointPosition(Vector point)
+    {
+    	return 1;
     }
 }

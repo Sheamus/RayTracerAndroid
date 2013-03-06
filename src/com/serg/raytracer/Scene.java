@@ -29,15 +29,16 @@ public class Scene {
           {-1,  -1,  -1,   1,   1}}};
 		// -A   A-B  B-A   A+B A&B
 		
-	public ArrayList<obj_base> objects;
+	public ArrayList<BaseObject> objects;
+	public ArrayList<CSGobject> csgObjects;
 	
 	public Scene()
 	{
-		objects = new ArrayList<obj_base>();
+		objects = new ArrayList<BaseObject>();
+		csgObjects = new ArrayList<CSGobject>();
 		light = new Vector();
 	}
 
-	
 	public void SetCamera(Vector pos, double p, double q)
 	{
 		double lat = q * Math.PI/180.0f;
@@ -121,7 +122,7 @@ public class Scene {
 		//переделать на обработку групп CSG-объектов, а не примитивов по отдельности!
 		for(int i=0; i<objects.size(); i++)
 		{
-			obj_base ob = objects.get(i);
+			BaseObject ob = objects.get(i);
 			ob.index = i;
 			objects.set(i, ob);
 			
@@ -271,5 +272,20 @@ public class Scene {
 		Refractions = 0;
 		Color c = FullTrace(ray);
 		return c;
+	}
+
+
+	public void BeginCSG(String name) {
+		CSGobject csg = new CSGobject(name);
+		csgObjects.add(csg);
+	}
+
+
+	public void AddObject(BaseObject object) {
+		objects.add(object);
+	}
+
+
+	public void EndCSG() {
 	}
 }

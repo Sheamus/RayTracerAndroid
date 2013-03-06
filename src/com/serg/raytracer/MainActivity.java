@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 	private Handler mHandler = new Handler();
 	private boolean isRendering; 
 
-	static int steps = 0;
+	static int steps = 5;
 	static int y = 0;
 	static double estimated = 0;
 	static double donePercents = 0;
@@ -71,6 +71,11 @@ public class MainActivity extends Activity {
 		long start = System.currentTimeMillis();
 
         Scene scene = new Scene();
+        scene.light = new Vector(0.0f, -199f, 0.0f);
+
+		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
+        Canvas canvas = new Canvas(bitmap);  
+
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
         scene.MaxReflection = 5;
         scene.MaxRefraction = 5;
@@ -78,11 +83,20 @@ public class MainActivity extends Activity {
         scene.Shadows = false;
         
         Random r = new Random();
-        
-        boolean testCSG = false;
+        /*
+        scene.BeginCSG("CornellBox");
+        scene.AddObject(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 	0.0, 0.0, 1.1));//задняя стенка
+        scene.AddObject(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 		0.0, 0.0, 1.1));//пол
+        scene.AddObject(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 	0.0, 0.0, 1.1));//потолок
+        scene.AddObject(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 	0.0, 0.0, 1.1));//левая стенка
+        scene.AddObject(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 		0.0, 0.0, 1.1));//правая стенка
+        scene.EndCSG();
+        */
+        boolean testCSG = true;
         
         if(!testCSG)
         {
+            scene.BeginCSG("Balls");
 	        for(int i=0;i<5;i++)
 	        {
 	        	int x = r.nextInt(300)-150;
@@ -94,26 +108,18 @@ public class MainActivity extends Activity {
 		        Sphere sph = new Sphere(
 		        		x, y, z, 
 		        		r.nextInt(90)+10, col, 0.1, 0.5, 1.5);
-		        scene.objects.add(sph);
+		        scene.AddObject(sph);
 	        }
+	        scene.EndCSG();
         }
         else{
-	        scene.objects.add(new Sphere( 50f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
-	        scene.objects.add(new Sphere(-50f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
+        	steps = 5;
+        	
+            scene.BeginCSG("TestCSG1");
+	        scene.AddObject(new Sphere( 50f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
+	        scene.AddObject(new Sphere(-50f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
+	        scene.EndCSG();
         }
-
-        scene.light = new Vector(0.0f, -199f, 0.0f);
-
-        scene.objects.add(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 	0.0, 0.0, 1.1));//задняя стенка
-        scene.objects.add(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 		0.0, 0.0, 1.1));//пол
-        scene.objects.add(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 	0.0, 0.0, 1.1));//потолок
-        scene.objects.add(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 	0.0, 0.0, 1.1));//левая стенка
-        scene.objects.add(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 		0.0, 0.0, 1.1));//правая стенка
-        
-        Log.i("s.objects", "" + scene.objects.size());
-        
-		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
-        Canvas canvas = new Canvas(bitmap);  
 
         Paint p = new Paint();   
         p.setAntiAlias(false);  
@@ -187,12 +193,14 @@ public class MainActivity extends Activity {
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
+            Log.i("onProgressUpdate", "updating...");
             showDialog(PROGRESS_DLG_ID);
         }
         
         @Override
         protected void onPostExecute(Bitmap result) {
             super.onPostExecute(result);
+            Log.i("onPostExecute", "update image");
             dismissDialog(PROGRESS_DLG_ID);
             image.setImageBitmap(result);	
         }
