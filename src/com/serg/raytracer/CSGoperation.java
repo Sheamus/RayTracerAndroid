@@ -5,4 +5,6 @@ public class CSGoperation {
 	public String name;
 	public int value;
 	public BaseObject object;
+	
+	
 }

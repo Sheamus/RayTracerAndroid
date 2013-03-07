@@ -21,20 +21,8 @@ public class Scene {
 	public int Refractions;
 	public Vector light;	
 	
-	private int[][][] RuleTable = new int[][][] //array [-1..1, -1..1, 1..5] of integer =
-	    {{{ 1,  -1,  -1,  -1,  -1},
-          { 1,  -1,   0,   0,  -1},
-          { 1,  -1,   1,   1,  -1}},
-         {{ 0,   0,  -1,   0,  -1},
-          { 0,  -1,  -1,   0,   0},
-          { 0,  -1,   0,   1,   0}},
-	     {{-1,   1,  -1,   1,  -1},
-          {-1,   0,  -1,   1,   0},
-          {-1,  -1,  -1,   1,   1}}};
-		// -A   A-B  B-A   A+B A&B
-		
 	private ArrayList<BaseObject> objects;
-	private ArrayList<CSGobject> csgObjects;
+	public ArrayList<CSGobject> csgObjects;//private
 	
 	public Scene()
 	{
@@ -138,10 +126,12 @@ public class Scene {
 				
 				for(int k=0;k<rps.size();k++)
 				{
-					//HashMap, а не HashTable, т.к. null не нужны, синхронизация тоже - она уменьшает скорость
-					HashMap<Integer, Integer>  pointPosition = new HashMap<Integer, Integer>(); 
+					//HashMap, but not Hashtable, because we don't need nulls and synchronization (low speed)
+					//multi-threading needs Hashtable
+					HashMap<Integer, Integer> pointPosition = new HashMap<Integer, Integer>(); 
 							
-					pointPosition.put(k, 0);//текущая точка k ЛЕЖИТ НА (0) текущем примитиве i 
+					pointPosition.put(i, 0);//the point k LAYS ON (0) the primitive i 
+					Log.i("pointPosition.put", i + "->" + 0);
 					
 					for(int i2=0; i2<csg.objIndex.size(); i2++)
 					{
@@ -153,6 +143,7 @@ public class Scene {
 						//вычисляем положение точки k относительно других примитивов (i2) CSG-объекта j
 						int ploc = obj2.GetPointPosition(rps.get(k).p);
 						pointPosition.put(i2, ploc);
+						Log.i("pointPosition.put", i2 + "->" + ploc);
 					}
 					
 					//исходя из значений pointPosition определить положение точки k относительно всего CSG-объекта j (-1;0;1)  

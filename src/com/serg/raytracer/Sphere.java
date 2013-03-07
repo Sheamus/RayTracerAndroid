@@ -62,6 +62,14 @@ public class Sphere extends BaseObject
     
     public int GetPointPosition(Vector point)
     {
-    	return 1;
+    	//sqrt?
+    	double d = Math.sqrt(Math.pow(point.m_x - this.center.m_x, 2) + Math.pow(point.m_y - this.center.m_y, 2) + Math.pow(point.m_z - this.center.m_z, 2));
+    	if(d < this.r)
+    		return 1;
+    	else
+    		if (d > this.r)
+    			return -1;
+    		
+    	return 0;
     }
 }
