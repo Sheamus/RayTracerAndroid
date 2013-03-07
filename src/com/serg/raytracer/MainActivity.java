@@ -12,11 +12,11 @@ package com.serg.raytracer;
 
 import java.util.Random;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,15 +28,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-
 public class MainActivity extends Activity {
 
 	static Bitmap bitmap;
-	private Handler mHandler = new Handler();
-	private boolean isRendering; 
-
-	static int steps = 0;
-	static int y = 0;
+    static int j = 64;
+    static Canvas canvas;
+    long start = 0;
+    
+	ProgressDialog pd;
+	Handler h;
+	  
+	static int steps = 1;
 	static double estimated = 0;
 	static double donePercents = 0;
 	static long time = 0;
@@ -53,10 +55,10 @@ public class MainActivity extends Activity {
 	    runButt = (Button) findViewById(R.id.button1);
 
 	    Board board = new Board();
-	    isRendering = false;
 	    
 	    image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(board.Init());
+        
 	}
 
 	@Override
@@ -65,20 +67,19 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public static void Render()
+	@SuppressLint("HandlerLeak")
+	public  void Render()
 	{
 		Log.i("Render", ">>");
-		long start = System.currentTimeMillis();
-
-        Scene scene = new Scene();
+		
+		start = System.currentTimeMillis();
+		
+		final Scene scene = new Scene();
         scene.light = new Vector(0.0f, -199f, 0.0f);
 
-		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
-        Canvas canvas = new Canvas(bitmap);  
-
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
-        scene.MaxReflection = 3;
-        scene.MaxRefraction = 3;
+        scene.MaxReflection = 0;
+        scene.MaxRefraction = 0;
         scene.FOCUS = 500;
         scene.Shadows = false;
         
@@ -108,7 +109,7 @@ public class MainActivity extends Activity {
 	        	int z = r.nextInt(200)-100;
 	        	Log.i("sphere x,y,z", x+","+y+","+z);
 	        	
-		        Color col = new Color().FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+		        Color col = Color.FromArgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 		        Sphere sph = new Sphere(
 		        		x, y, z, 
 		        		r.nextInt(90)+10, col, 0.1, 0.5, 1.5);
@@ -123,7 +124,6 @@ public class MainActivity extends Activity {
 	        scene.EndCSG();
 	        
 	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("-", 6, 5));
-	        //scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("&", 1, 0));
 
             scene.BeginCSG("CSG_Union");
 	        scene.AddObject(new Sphere( 90f, 30f, 90f, 100f, Color.Blue(), 		0.1f, 0.0f, 1.1f));
@@ -133,46 +133,79 @@ public class MainActivity extends Activity {
 	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("&", 7, 8));
         }
 
-        Paint p = new Paint();   
+    	pd = new ProgressDialog(this);
+        pd.setTitle("Rendering");
+        pd.setMessage("Please wait...");
+        // меняем стиль на индикатор
+        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pd.setMax(480-60-64);
+        pd.setIndeterminate(true);
+        pd.show();
+
+		bitmap = Bitmap.createBitmap(320, 480, Config.ARGB_8888);  
+        canvas = new Canvas(bitmap);  
+
+        final Paint p = new Paint();   
         p.setAntiAlias(false);  
         p.setStyle(Paint.Style.FILL_AND_STROKE);  
         p.setStrokeWidth(1);  
         
-		time = System.currentTimeMillis() - start;
-
-		for (int j = 64; j < 420; j++)
-        {
-        	y = j;
+        h = new Handler() {
+          public void handleMessage(Message msg) {
+            pd.setIndeterminate(false);
+            
     		time = System.currentTimeMillis() - start;
-    		donePercents = 100*(j-64)/(420-64);
-    		if(donePercents>0)
-    			estimated = 100*time/donePercents;
-    		
-            for (int i = 0; i < 320; i++)
-            {
-                Color c = scene.Render(i - 320 / 2, j - 480 / 2);
-                int icol = 0xff000000 + (c.R << 16) + (c.G << 8) + c.B; 
-                p.setColor(icol);
 
-                if(steps == 0)
-                	canvas.drawPoint(i, j, p);
-                else
-                	canvas.drawRect(i, j, i+steps+1, j+steps+1, p);
+            if (pd.getProgress() < pd.getMax()) {
+            	pd.incrementProgressBy(steps);
+            	//pd.incrementSecondaryProgressBy(10);
+            	h.sendEmptyMessageDelayed(0, 100);
+
+        		time = System.currentTimeMillis() - start;
+        		donePercents = 100*(j-64)/(420-64);
+        		if(donePercents>0)
+        			estimated = 100*time/donePercents;
+                
+        		long seconds = (long)((estimated - time)/1000);
+        		long minutes = (long)(seconds / 60);
+        		long hours = (long)(minutes / 60);
         		
-        		i+=steps;
-            }
-            j+=steps;
-        }
+        		pd.setMessage("Please wait... " + minutes + "m " + seconds + "s");
+        		
+                for (int i = 0; i < 320; i++)
+                {
+                    Color c = scene.Render(i - 320 / 2, j - 480 / 2);
+                    int icol = 0xff000000 + (c.R << 16) + (c.G << 8) + c.B; 
+                    p.setColor(icol);
 
-		time = System.currentTimeMillis() - start;
-        Log.i("Render time", time + " ms");
+                    if(steps == 1)
+                    	canvas.drawPoint(i, j, p);
+                    else
+                    	canvas.drawRect(i, j, i+steps+1, j+steps+1, p);
+            		
+            		i+=(steps-1);
+                }
+                j+=steps;
+            } 
+            else {
+              pd.dismiss();
+            }
+
+    		time = System.currentTimeMillis() - start;
+
+            image.setImageBitmap(bitmap);	
+          }
+        };
+        h.sendEmptyMessageDelayed(0, 200);
 
         p.setColor(0xff000000);
         canvas.drawText("Render time: " + time + " ms", 5, 380, p);
         p.setColor(0xffffffff);
         canvas.drawText("Render time: " + time + " ms", 4, 379, p);
+        
+        image.setImageBitmap(bitmap);	
 	}
-	
+	/*
 	@Override
     protected Dialog onCreateDialog(int dialogId){
         ProgressDialog progress = null;
@@ -217,4 +250,15 @@ public class MainActivity extends Activity {
             image.setImageBitmap(result);	
         }
     }
+    */
+	
+	public void onclick(View v) {
+	    switch (v.getId()) {
+	    case R.id.button1:
+	    	Render();
+	    	break;
+	    default:
+	      break;
+	    }
+	}
 }
