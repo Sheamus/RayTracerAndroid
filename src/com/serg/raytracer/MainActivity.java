@@ -74,8 +74,8 @@ public class MainActivity extends Activity {
         scene.light = new Vector(0.0f, -199f, 0.0f);
 
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
-        scene.MaxReflection = 0;
-        scene.MaxRefraction = 0;
+        scene.MaxReflection = 3;
+        scene.MaxRefraction = 2;
         scene.FOCUS = 500;
         scene.Shadows = false;
         
@@ -118,18 +118,15 @@ public class MainActivity extends Activity {
 	        scene.AddObject(new Sphere( 30f, -5f, 20f,  100f, Color.Red(), 		0.1f, 0.0f, 1.1f));
 	        scene.AddObject(new Sphere(-30f, 10f, -10f, 100f, Color.Green(), 	0.1f, 0.0f, 1.1f));
 	        scene.EndCSG();
-	        
 	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("-", 6, 5));
 
             scene.BeginCSG("CSG_Union");
 	        scene.AddObject(new Sphere( 90f, 30f, 90f, 100f, Color.Blue(), 		0.1f, 0.0f, 1.1f));
 	        scene.AddObject(new Sphere( 50f, 50f, 50f, 100f, Color.Magenta(), 	0.1f, 0.0f, 1.1f));
 	        scene.EndCSG();
-	        
 	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("&", 7, 8));
         }
 	}
-	
 	
 	@SuppressLint("HandlerLeak")
 	public void Render()
@@ -144,7 +141,6 @@ public class MainActivity extends Activity {
     	pd = new ProgressDialog(this);
         pd.setTitle("Rendering");
         pd.setMessage("Please wait...");
-        // меняем стиль на индикатор
         pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pd.setMax(480-60-64);
         pd.setIndeterminate(true);
@@ -176,7 +172,6 @@ public class MainActivity extends Activity {
                 
         		long seconds = (long)((estimated - time)/1000);
         		long minutes = (long)(seconds / 60);
-        		long hours = (long)(minutes / 60);
         		
         		pd.setMessage("Please wait... " + minutes + "m " + (seconds % 60) + "s");
         		
@@ -213,52 +208,6 @@ public class MainActivity extends Activity {
         
         image.setImageBitmap(bitmap);	
 	}
-	/*
-	@Override
-    protected Dialog onCreateDialog(int dialogId){
-        ProgressDialog progress = null;
-        switch (dialogId) {
-        case PROGRESS_DLG_ID:
-            progress = new ProgressDialog(this);
-                progress.setMessage("Rendering...");
-            break;
-        }
-        return progress;
-    }
-    
-    public void runButtonHandler(View button){
-        if(button.getId() == R.id.button1)
-        {
-            new RenderSceneTask().execute("");
-        }
-    }
-    
-    class RenderSceneTask extends AsyncTask<String, Void, Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            publishProgress(new Void[]{});
-           
-            Render();
-
-            return bitmap;
-        }
-        
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-            Log.i("onProgressUpdate", "updating...");
-            showDialog(PROGRESS_DLG_ID);
-        }
-        
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            super.onPostExecute(result);
-            Log.i("onPostExecute", "update image");
-            dismissDialog(PROGRESS_DLG_ID);
-            image.setImageBitmap(result);	
-        }
-    }
-    */
 	
 	public void onclick(View v) {
 	    switch (v.getId()) {

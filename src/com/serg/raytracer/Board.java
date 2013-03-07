@@ -33,7 +33,6 @@ public class Board {
         int sizeY = 10;
         int cellsX = 320 / sizeX;
         int cellsY = (480 - 64 - 60) / sizeY;
-        Random random = new Random();
 
         for(int j=0;j<cellsY;j++)
         {

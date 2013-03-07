@@ -9,12 +9,6 @@ public class CSGobject {
 	public String Name;
 	public ArrayList<Integer> objIndex;
 
-	//D&(C-(A+B)) =>  +(A,B); -(C, AB), &(D, CAB)
-	//1. val1 = +(A, B)
-	//2. val2 = -(C, val1)
-	//3. val3 = &(D, val2)
-	//4. result = val3
-	
 	public ArrayList<Operation> operations;
 	
 	public CSGobject(String name)
