@@ -31,9 +31,10 @@ import android.widget.ImageView;
 public class MainActivity extends Activity {
 
 	static Bitmap bitmap;
-    static int j = 64;
+    static int j;
     static Canvas canvas;
-    long start = 0;
+    long start;
+    Scene scene;
     
 	ProgressDialog pd;
 	Handler h;
@@ -67,14 +68,9 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	@SuppressLint("HandlerLeak")
-	public  void Render()
+	public void InitScene()
 	{
-		Log.i("Render", ">>");
-		
-		start = System.currentTimeMillis();
-		
-		final Scene scene = new Scene();
+		scene = new Scene();
         scene.light = new Vector(0.0f, -199f, 0.0f);
 
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
@@ -132,7 +128,19 @@ public class MainActivity extends Activity {
 	        
 	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("&", 7, 8));
         }
+	}
+	
+	
+	@SuppressLint("HandlerLeak")
+	public void Render()
+	{
+		Log.i("Render", ">>");
+		
+		start = System.currentTimeMillis();
+		
+		InitScene();
 
+        j = 64;
     	pd = new ProgressDialog(this);
         pd.setTitle("Rendering");
         pd.setMessage("Please wait...");
@@ -170,7 +178,7 @@ public class MainActivity extends Activity {
         		long minutes = (long)(seconds / 60);
         		long hours = (long)(minutes / 60);
         		
-        		pd.setMessage("Please wait... " + minutes + "m " + seconds + "s");
+        		pd.setMessage("Please wait... " + minutes + "m " + (seconds % 60) + "s");
         		
                 for (int i = 0; i < 320; i++)
                 {
