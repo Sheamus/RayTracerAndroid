@@ -83,15 +83,15 @@ public class MainActivity extends Activity {
         scene.Shadows = false;
         
         Random r = new Random();
-        /*
+        
         scene.BeginCSG("CornellBox");
         scene.AddObject(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 	0.0, 0.0, 1.1));//задняя стенка
         scene.AddObject(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 		0.0, 0.0, 1.1));//пол
         scene.AddObject(new Plane(new Vector(0, -200, 0), new Vector(0, 0, -1), Color.White(), 	0.0, 0.0, 1.1));//потолок
         scene.AddObject(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 	0.0, 0.0, 1.1));//левая стенка
-        scene.AddObject(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 		0.0, 0.0, 1.1));//правая стенка
+        scene.AddObject(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 	0.0, 0.0, 1.1));//правая стенка
         scene.EndCSG();
-        */
+        
         boolean testCSG = true;
         
         if(!testCSG)

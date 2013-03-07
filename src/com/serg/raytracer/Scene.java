@@ -1,13 +1,17 @@
 package com.serg.raytracer;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
+import android.R.integer;
 import android.util.Log;
 
 public class Scene {
-	public double[][] F = new double[4][4];
-	public double[][] F_1 = new double[4][4];
+	private double[][] F = new double[4][4];
+	private double[][] F_1 = new double[4][4];
 	public double FOCUS = 10000.0f;
 	public double alpha = 0.0f;
 	public boolean Shadows = true;
@@ -17,7 +21,7 @@ public class Scene {
 	public int Refractions;
 	public Vector light;	
 	
-	public int[][][] RuleTable = new int[][][] //array [-1..1, -1..1, 1..5] of integer =
+	private int[][][] RuleTable = new int[][][] //array [-1..1, -1..1, 1..5] of integer =
 	    {{{ 1,  -1,  -1,  -1,  -1},
           { 1,  -1,   0,   0,  -1},
           { 1,  -1,   1,   1,  -1}},
@@ -29,8 +33,8 @@ public class Scene {
           {-1,  -1,  -1,   1,   1}}};
 		// -A   A-B  B-A   A+B A&B
 		
-	public ArrayList<BaseObject> objects;
-	public ArrayList<CSGobject> csgObjects;
+	private ArrayList<BaseObject> objects;
+	private ArrayList<CSGobject> csgObjects;
 	
 	public Scene()
 	{
@@ -85,7 +89,7 @@ public class Scene {
 		F_1[3][3] = 1.0f;
 	}
 
-	public Vector EkrToObj(Vector p)
+	private Vector EkrToObj(Vector p)
 	{
 		return new Vector(
 			p.m_x * F_1[0][0] + p.m_y * F_1[0][1] + p.m_z * F_1[0][2] + F_1[0][3],
@@ -94,7 +98,7 @@ public class Scene {
 		);
 	}
 	
-	public Ray ShootRay(int x, int y)
+	private Ray ShootRay(int x, int y)
 	{
 		Ray ray = new Ray();
 		Vector p2 = new Vector(x + F_1[0][3], y + F_1[1][3], 0f + F_1[2][3]);
@@ -115,26 +119,57 @@ public class Scene {
 		return ray;
 	}
 	
-	public ArrayList<RayPoint> IntersectAllObjects(Ray ray)
+	private ArrayList<RayPoint> IntersectAllObjects(Ray ray)
 	{
 		ArrayList<RayPoint> RayIntersection = new ArrayList<RayPoint>();
 		
-		//переделать на обработку групп CSG-объектов, а не примитивов по отдельности!
-		for(int i=0; i<objects.size(); i++)
+		for(int j=0;j<csgObjects.size();j++)
 		{
-			BaseObject ob = objects.get(i);
-			ob.index = i;
-			objects.set(i, ob);
-			
-			ArrayList<RayPoint> rps = objects.get(i).Intersection(ray);
-			for(int j=0;j<rps.size();j++)
-				RayIntersection.add(rps.get(j)); 
+			CSGobject csg = csgObjects.get(j);
+			for(int i=0; i<csg.objIndex.size(); i++)
+			{
+				int indx = csg.objIndex.get(i);
+				
+				BaseObject obj = objects.get(indx);
+				obj.index = indx;
+				objects.set(indx, obj);
+				
+				ArrayList<RayPoint> rps = objects.get(indx).Intersection(ray);
+				
+				for(int k=0;k<rps.size();k++)
+				{
+					//HashMap, а не HashTable, т.к. null не нужны, синхронизация тоже - она уменьшает скорость
+					HashMap<Integer, Integer>  pointPosition = new HashMap<Integer, Integer>(); 
+							
+					pointPosition.put(k, 0);//текущая точка k ЛЕЖИТ НА (0) текущем примитиве i 
+					
+					for(int i2=0; i2<csg.objIndex.size(); i2++)
+					{
+						if(i2 == i) continue;
+						
+						int indx2 = csg.objIndex.get(i2);
+						BaseObject obj2 = objects.get(indx2);
+						
+						//вычисляем положение точки k относительно других примитивов (i2) CSG-объекта j
+						int ploc = obj2.GetPointPosition(rps.get(k).p);
+						pointPosition.put(i2, ploc);
+					}
+					
+					//исходя из значений pointPosition определить положение точки k относительно всего CSG-объекта j (-1;0;1)  
+					int pos = csg.Calculate(pointPosition);
+					
+					//проверяем для найденных точек примитива их вхождение в текущий CSG-объект
+					//если удовлетворяет CSG-правилам для этого CSG-объекта, то добавляем точку
+					if(pos == 0 || pos == 1)
+						RayIntersection.add(rps.get(k));
+				}
+			}
 		}
 		
 		return RayIntersection;
 	}
 	
-	public RayPoint Trace(Ray ray)
+	private RayPoint Trace(Ray ray)
 	{
 		RayPoint pp = null; 
 		
@@ -283,9 +318,12 @@ public class Scene {
 
 	public void AddObject(BaseObject object) {
 		objects.add(object);
+		CSGobject csg = csgObjects.get(csgObjects.size()-1);
+		csg.objIndex.add(objects.size()-1);
 	}
 
 
 	public void EndCSG() {
+		Log.i("CSG '" + csgObjects.get(csgObjects.size()-1).Name + "'", "objects:" + csgObjects.get(csgObjects.size()-1).objIndex.size() );
 	}
 }
