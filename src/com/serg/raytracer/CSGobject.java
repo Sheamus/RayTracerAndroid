@@ -31,8 +31,8 @@ public class CSGobject {
 		for(int i=0;i<operations.size();i++)
 		{
 			Operation op = operations.get(i);
-			Log.i("Calculate:operations", pointPosition.get(op.Left) + " " + op.Name + " " + pointPosition.get(op.Right) + " => ...");
 			int subResult = op.GetResult(pointPosition);
+			//Log.i("Calculate:operations", pointPosition.get(op.Left) + " " + op.Name + " " + pointPosition.get(op.Right) + " => " + subResult);
 
 			result = subResult;
 		}

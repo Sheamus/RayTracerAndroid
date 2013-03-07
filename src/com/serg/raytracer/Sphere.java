@@ -32,7 +32,7 @@ public class Sphere extends BaseObject
             double t1 = -b - Math.sqrt(b * b - c2);
             double t2 = -b + Math.sqrt(b * b - c2);
 
-            if (t1 > 0.0f && t1 <= t2)
+            //if (t1 > 0.0f && t1 <= t2)
             {
                 RayPoint rp = new RayPoint();
                 rp.p = Vector.op_plus(ray.p1, Vector.op_mult(visual, t1));
@@ -42,7 +42,7 @@ public class Sphere extends BaseObject
                 RayIntersection.add(rp);
             }
 
-            if (t2 > 0.0f && t2 < t1)
+            //if (t2 > 0.0f && t2 < t1)
             {
                 RayPoint rp = new RayPoint();
                 rp.p = Vector.op_plus(ray.p1, Vector.op_mult(visual, t2));
@@ -64,10 +64,10 @@ public class Sphere extends BaseObject
     {
     	//sqrt?
     	double d = Math.sqrt(Math.pow(point.m_x - this.center.m_x, 2) + Math.pow(point.m_y - this.center.m_y, 2) + Math.pow(point.m_z - this.center.m_z, 2));
-    	if(d < this.r)
+    	if(d < this.r - 0.00001)
     		return 1;
     	else
-    		if (d > this.r)
+    		if (d > this.r + 0.00001)
     			return -1;
     		
     	return 0;

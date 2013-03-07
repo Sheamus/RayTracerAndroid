@@ -21,7 +21,7 @@ public class Scene {
 	public int Refractions;
 	public Vector light;	
 	
-	private ArrayList<BaseObject> objects;
+	public ArrayList<BaseObject> objects;//private
 	public ArrayList<CSGobject> csgObjects;//private
 	
 	public Scene()
@@ -111,7 +111,7 @@ public class Scene {
 	{
 		ArrayList<RayPoint> RayIntersection = new ArrayList<RayPoint>();
 		
-		for(int j=0;j<csgObjects.size();j++)
+		for(int j=0; j<csgObjects.size();j++)
 		{
 			CSGobject csg = csgObjects.get(j);
 			for(int i=0; i<csg.objIndex.size(); i++)
@@ -123,15 +123,15 @@ public class Scene {
 				objects.set(indx, obj);
 				
 				ArrayList<RayPoint> rps = objects.get(indx).Intersection(ray);
-				
-				for(int k=0;k<rps.size();k++)
+
+				for(int k=0; k<rps.size();k++)
 				{
 					//HashMap, but not Hashtable, because we don't need nulls and synchronization (low speed)
 					//multi-threading needs Hashtable
 					HashMap<Integer, Integer> pointPosition = new HashMap<Integer, Integer>(); 
 							
 					pointPosition.put(indx, 0);//the point k LAYS ON (0) the primitive i 
-					Log.i("pointPosition.put", i + "->" + 0);
+					//Log.i("pointPosition.put", i + "->" + 0);
 					
 					for(int i2=0; i2<csg.objIndex.size(); i2++)
 					{
@@ -139,11 +139,15 @@ public class Scene {
 						
 						int indx2 = csg.objIndex.get(i2);
 						BaseObject obj2 = objects.get(indx2);
+						//obj2.index = indx2;
+						//objects.set(indx2, obj2);
+						
+						//if(indx == indx2) continue;
 						
 						//вычисляем положение точки k относительно других примитивов (i2) CSG-объекта j
 						int ploc = obj2.GetPointPosition(rps.get(k).p);
 						pointPosition.put(indx2, ploc);
-						Log.i("pointPosition.put", i2 + "->" + ploc);
+						//Log.i("pointPosition.put", i2 + "->" + ploc);
 					}
 					
 					//исходя из значений pointPosition определить положение точки k относительно всего CSG-объекта j (-1;0;1)  
@@ -151,6 +155,8 @@ public class Scene {
 					
 					//проверяем для найденных точек примитива их вхождение в текущий CSG-объект
 					//если удовлетворяет CSG-правилам для этого CSG-объекта, то добавляем точку
+					
+					//Log.i("IntersectAllObjects", "pos:" + pos);
 					if(pos == 0 || pos == 1)
 						RayIntersection.add(rps.get(k));
 				}
@@ -163,10 +169,9 @@ public class Scene {
 	private RayPoint Trace(Ray ray)
 	{
 		RayPoint pp = null; 
-		
 		//находим пересечения со всеми объектами сцены
 		ArrayList<RayPoint> intersections = IntersectAllObjects(ray);
-
+		
 		//ищем ближайшую точку
 		double t_min = Double.MAX_VALUE;
 		for(int i=0; i<intersections.size(); i++)
@@ -175,13 +180,13 @@ public class Scene {
 				t_min = intersections.get(i).t;
 				pp = intersections.get(i);
 			}
-
+		
 		return pp;
 	}
 	
 	public Color FullTrace(Ray ray)
 	{  
-		Color color = (new Color());
+		Color color = new Color();
 		//color = (new Color()).Gray();
 		RayPoint rp = Trace(ray);
 		if (rp!=null)
@@ -193,10 +198,10 @@ public class Scene {
 			col.R = (int)(ang_cos * obj_color.R);
 			col.G = (int)(ang_cos * obj_color.G);
 			col.B = (int)(ang_cos * obj_color.B);
-			if (ang_cos>0) 
+			
+			//if (ang_cos>0) 
 				color = col;
-			else
-				color = Color.Black();
+			//else color = Color.Blue();
 
 			//определяем затенённость точки
 			if(Shadows)
@@ -237,8 +242,7 @@ public class Scene {
 				ray2.p1 = Vector.op_plus(rp.p, (Vector.op_mult(reflect, 0.000001f)));//смещаем первую точку чуть-чуть подальше от края объекта
 				ray2.p2 = Vector.op_plus(rp.p, reflect);
 				
-				Color c2 = Color.Black();
-				c2 = FullTrace(ray2);
+				Color c2 = FullTrace(ray2);
 
 				//учитываем коэффициент отражения. Чем он больше, тем зеркальнее поверхность текущего объекта
 				c2.R = (int)(c2.R * objects.get(rp.obj_index).material.reflictivity);
@@ -316,5 +320,6 @@ public class Scene {
 
 	public void EndCSG() {
 		Log.i("CSG '" + csgObjects.get(csgObjects.size()-1).Name + "'", "objects:" + csgObjects.get(csgObjects.size()-1).objIndex.size() );
+		//компиляция CSG-выражения в набор команд
 	}
 }

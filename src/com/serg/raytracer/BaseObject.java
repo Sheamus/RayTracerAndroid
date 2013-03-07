@@ -14,7 +14,6 @@ public abstract class BaseObject {
 	
 	public ArrayList<RayPoint> Intersection(Ray ray)
 	{
-		//RayIntersection
 		return null;
 	}
 	

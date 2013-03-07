@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 	private Handler mHandler = new Handler();
 	private boolean isRendering; 
 
-	static int steps = 5;
+	static int steps = 0;
 	static int y = 0;
 	static double estimated = 0;
 	static double donePercents = 0;
@@ -77,8 +77,8 @@ public class MainActivity extends Activity {
         Canvas canvas = new Canvas(bitmap);  
 
         scene.SetCamera(new Vector(-110.1f, -110.1f, -110.1f), 180f, 0f);
-        scene.MaxReflection = 5;
-        scene.MaxRefraction = 5;
+        scene.MaxReflection = 0;
+        scene.MaxRefraction = 0;
         scene.FOCUS = 500;
         scene.Shadows = false;
         
@@ -118,12 +118,12 @@ public class MainActivity extends Activity {
         }
         else{
             scene.BeginCSG("TestCSG1");
-	        scene.AddObject(new Sphere( 30f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
-	        scene.AddObject(new Sphere(-30f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
+	        scene.AddObject(new Sphere( 30f, -5f, 20f,  100f, Color.Red(), 		0.0f, 0.0f, 1.1f));
+	        scene.AddObject(new Sphere(-30f, 10f, -10f, 100f, Color.Green(), 	0.0f, 0.0f, 1.1f));
 	        scene.EndCSG();
 	        
-	        scene.csgObjects.get(1).operations.add(new Operation("&", 5, 6));
-	        //scene.csgObjects.get(0).operations.add(new Operation("&", 0, 1));
+	        scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("-", 6, 5));
+	        //scene.csgObjects.get(scene.csgObjects.size()-1).operations.add(new Operation("&", 1, 0));
         }
 
         Paint p = new Paint();   
