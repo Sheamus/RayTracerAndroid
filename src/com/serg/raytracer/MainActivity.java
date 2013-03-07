@@ -83,7 +83,7 @@ public class MainActivity extends Activity {
         scene.Shadows = false;
         
         Random r = new Random();
-        /*
+        
         scene.BeginCSG("CornellBox");
         scene.AddObject(new Plane(new Vector(0, 0, 100), new Vector(0, -1, 0), Color.Yellow(), 	0.0, 0.0, 1.1));//задняя стенка
         scene.AddObject(new Plane(new Vector(0, 200, 0), new Vector(0, 0, 1), Color.Red(), 		0.0, 0.0, 1.1));//пол
@@ -91,7 +91,11 @@ public class MainActivity extends Activity {
         scene.AddObject(new Plane(new Vector(200, 0, 0), new Vector(-1, 0, 0), Color.Green(), 	0.0, 0.0, 1.1));//левая стенка
         scene.AddObject(new Plane(new Vector(-200, 0, 0), new Vector(1, 0, 0), Color.Blue(), 	0.0, 0.0, 1.1));//правая стенка
         scene.EndCSG();
-        */
+        scene.csgObjects.get(0).operations.add(new Operation("+", 0, 1));
+        scene.csgObjects.get(0).operations.add(new Operation("+", 0, 2));
+        scene.csgObjects.get(0).operations.add(new Operation("+", 0, 3));
+        scene.csgObjects.get(0).operations.add(new Operation("+", 0, 4));
+        
         boolean testCSG = true;
         
         if(!testCSG)
@@ -113,15 +117,13 @@ public class MainActivity extends Activity {
 	        scene.EndCSG();
         }
         else{
-        	steps = 5;
-        	
             scene.BeginCSG("TestCSG1");
-	        scene.AddObject(new Sphere( 40f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
-	        scene.AddObject(new Sphere(-40f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
+	        scene.AddObject(new Sphere( 30f, -5f, 20f, 70f, Color.Red(), 		0.0f, 0.0f, 1.1f));
+	        scene.AddObject(new Sphere(-30f, 10f, -10f, 70f, Color.Green(), 	0.0f, 0.0f, 1.1f));
 	        scene.EndCSG();
 	        
-	        //scene.csgObjects.get(1).operations.add(new Operation("&", 5, 6));
-	        scene.csgObjects.get(0).operations.add(new Operation("&", 0, 1));
+	        scene.csgObjects.get(1).operations.add(new Operation("&", 5, 6));
+	        //scene.csgObjects.get(0).operations.add(new Operation("&", 0, 1));
         }
 
         Paint p = new Paint();   

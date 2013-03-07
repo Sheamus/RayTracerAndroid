@@ -21,6 +21,11 @@ public class Operation {
 		Log.i("GetResult()", "Left=" + Left + ", " + "Right="+Right);
 		int left = pointPosition.get(Left)+1;
 		int right = pointPosition.get(Right)+1;
+		
+		if (Name == "-")
+			return OperationRule.RuleTable[left][right][1];
+		if (Name == "+")
+			return OperationRule.RuleTable[left][right][3];
 		if (Name == "&")
 			return OperationRule.RuleTable[left][right][4];
 		

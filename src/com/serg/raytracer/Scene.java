@@ -130,7 +130,7 @@ public class Scene {
 					//multi-threading needs Hashtable
 					HashMap<Integer, Integer> pointPosition = new HashMap<Integer, Integer>(); 
 							
-					pointPosition.put(i, 0);//the point k LAYS ON (0) the primitive i 
+					pointPosition.put(indx, 0);//the point k LAYS ON (0) the primitive i 
 					Log.i("pointPosition.put", i + "->" + 0);
 					
 					for(int i2=0; i2<csg.objIndex.size(); i2++)
@@ -142,7 +142,7 @@ public class Scene {
 						
 						//вычисляем положение точки k относительно других примитивов (i2) CSG-объекта j
 						int ploc = obj2.GetPointPosition(rps.get(k).p);
-						pointPosition.put(i2, ploc);
+						pointPosition.put(indx2, ploc);
 						Log.i("pointPosition.put", i2 + "->" + ploc);
 					}
 					
